@@ -118,6 +118,9 @@ class LaunchContract(unittest.TestCase):
                 self.assertEqual(env.get('ATLAS_QWEN4EXP_MTP_DEPTH'), '7')
                 self.assertEqual(env.get('ATLAS_MTP_MAX_SEQS'), '8')
                 self.assertEqual(env.get('ATLAS_CONTENT_LOOP_MIN_REPEATS'), '32')
+                # RC16: changes output only where the content-loop watchdog would
+                # otherwise cut the response (exact everywhere else).
+                self.assertEqual(env.get('ATLAS_LOOP_STEER'), '1')
                 self.assertNotIn('ATLAS_QWEN4EXP_MTP_CONFIDENCE', env)
                 self.assertEqual(env.get('ATLAS_EP_PROTOCOL'), 'v2')
                 for key in held_back:

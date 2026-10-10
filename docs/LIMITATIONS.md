@@ -95,10 +95,10 @@ What to know before relying on SparkQwen.
 - **Greedy decoding can loop.** The model card recommends sampling
   (temperature 1.0, top-p 0.95, top-k 20 with thinking; 0.7, 0.80, 20 without),
   and requests that leave sampling unset get those. At temperature 0, as
-  benchmarks run it, the model can fall into a repetition attractor: in
-  RigMark's code workload, one of three greedy runs starts repeating
-  `0, 0, 0` in a Go test table and is cut off (finish reason `length`), so
-  that gate scores 2/3.
+  benchmarks run it, the model is greedy and can fall into a repetition
+  attractor: in RigMark's code workload, one of three greedy runs starts
+  repeating `0, 0, 0` in a Go test table and is cut off (finish reason
+  `length`), so that gate scores 2/3 and RigMark's output gate totals 8 of 9.
   vLLM on the same pair, with different rounding, passed it 3/3. Use the
   model's sampling settings for real work.
 - The card's presence penalty of 1.5 for thinking-off requests is applied only
@@ -148,7 +148,7 @@ the shipped profiles' measured behavior.
   changes nothing).
 - The image build installs rustup with `curl | sh`, and `./start.sh download`
   installs `huggingface_hub` with pip into an unpinned `python:3.12-slim`;
-  neither is checked against a hash yet.
+  neither is checked against a hash in the released RC15 installer.
 - The startup parity check between ranks does not yet cover
   `ATLAS_QWEN4EXP_SNAPSHOT_AUX_MB`, and preflight does not use the resolved
   SSM cache slot count.

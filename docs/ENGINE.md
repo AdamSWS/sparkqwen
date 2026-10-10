@@ -12,12 +12,17 @@ which adds SparkQwen-only work on top of the 2026-10-06 Qwen series
 (3322e221). It passed the gates in
 [results/2026-10-08-rc15](../results/2026-10-08-rc15/RESULT.md).
 
+The release is based on Atlas-Inf `main` at `4405bce3`. Its Qwen contribution
+series is published on `upstream/qwen38-flash-next-20261006` at `3322e221`;
+the complete RC15 engine is on `sparkqwen/atlas-20261008-rc15` at `de4386b4`.
+These are pinned Enntity snapshots, separate from current Atlas-Inf `main`.
+
 ## Layers
 
 The pinned branch `sparkqwen/atlas-<date>-<name>` is built from four layers,
 each on top of the one before:
 
-1. **Atlas-Inf `main`.**
+1. **Atlas-Inf `main` at `4405bce3`.**
 2. **SparkGLM's upstream GLM-5.3-Flash series** (`upstream/glm53-flash-*`,
    the series [SparkGLM](https://github.com/Enntity/sparkglm) intends to
    propose to Atlas-Inf). It carries the model-independent work: prefill FIFO

@@ -9,8 +9,10 @@ The README's numbers and their raw receipts are in
 [`results/2026-10-08-rc15/`](../results/2026-10-08-rc15/RESULT.md): `raw/recipe/`
 from the recipe's own image, `raw/dev/` from the release gates (with each
 arm's exact environment, `raw/dev/*.list`), and `raw/vllm/` from vLLM on the
-same pair. Everything below runs with the default profile and no opt-ins
-unless it says otherwise.
+same pair. The recipe image uses install tree `3b8fb8cba87d` and the engine
+pin in `install/atlas-source.json`. Use a checkout with those same pins and
+settings when reproducing the release. Everything below
+runs with the default profile and no opt-ins unless it says otherwise.
 
 ## sparkDash decode
 

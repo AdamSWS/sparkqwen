@@ -85,7 +85,7 @@ What to know before relying on SparkQwen.
 - Two-Spark (TP2) output is not bit-identical to single-GPU output: BF16
   rounding of the tensor-parallel partial sums (96 reductions per token),
   amplified by QSA's top-k selection past 4,096 tokens.
-- `FP8_GDN=1` changes outputs, and has not been measured with RC15.
+- `FP8_GDN=1` changes outputs, and has not been measured with RC15 or RC16.
 - cuBLASLt chooses split-K differently in CUDA 13.0 (the runtime image) and
   13.1. Exactness checks are only meaningful inside the image's CUDA version.
 

@@ -6,7 +6,7 @@ time. Run steps 1–3 on **both** Sparks with the same `MODEL_ROOT`.
 
 | Component | Pin |
 |---|---|
-| Engine | [`Enntity/atlas`](https://github.com/Enntity/atlas), `sparkqwen/atlas-20261008-rc15` at de4386b4 ([`install/atlas-source.json`](../install/atlas-source.json), [docs/ENGINE.md](ENGINE.md)) |
+| Engine | [`Enntity/atlas`](https://github.com/Enntity/atlas), `sparkqwen/atlas-20261010-rc16` at 1c43247d ([`install/atlas-source.json`](../install/atlas-source.json), [docs/ENGINE.md](ENGINE.md)) |
 | Model | [`nvidia/Qwen3.8-Flash-Next-NVFP4`](https://huggingface.co/nvidia/Qwen3.8-Flash-Next-NVFP4) @ `fc694b54fb0174e0913e6adf86691ef85a4ead47` ([`install/checkpoint.json`](../install/checkpoint.json)) |
 | Build dependencies | CUTLASS `cf064d2e`, NCCL 2.31.2, Rust 1.93.1, CUDA 13.0 |
 | Profiles | [`install/profiles/`](../install/profiles/): `8x32k` (default), `4x262k` and `8x262k` (long context) |
@@ -72,7 +72,11 @@ starts reuse it. Run one warmup pass before measuring.
 on both ranks.
 
 **Opt-in.** `--fp8-gdn` (lossy FP8 Gated DeltaNet projections) is off by
-default. Use it on both ranks or neither; see [LIMITATIONS.md](LIMITATIONS.md).
+default. Use the same setting on both ranks; see
+[LIMITATIONS.md](LIMITATIONS.md).
+
+`--qsa-tc2r` was removed in RC16: the tensor-core QSA prefill it selected is
+the two-Spark default since RC15.
 
 **Memory share.** `--gpu-memory-utilization` (0.80–0.95) on both ranks
 overrides the profiles' 0.88, the only value we have measured.

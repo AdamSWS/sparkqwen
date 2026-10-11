@@ -27,6 +27,12 @@ clone built the image, served the pair and reproduced the numbers below on
 our Sparks; no image is published yet, so the first start builds one
 ([docs/LIMITATIONS.md](docs/LIMITATIONS.md)).
 
+This README describes RC16: install tree `656234c336af` and the Atlas engine
+pinned in [`install/atlas-source.json`](install/atlas-source.json),
+`sparkqwen/atlas-20261010-rc16` at `1c43247d` (tree `59cace5a`). The engine
+uses an Atlas-Inf `main` base at `4405bce3`; the Enntity release and
+contribution branches are published separately from Atlas-Inf `main`.
+
 ## What it does
 
 Measured on two DGX Sparks joined by one 200G cable, through the recipe's own
@@ -84,10 +90,11 @@ already done, so rerunning it just restarts the engine.
    ([`install/build.sh`](install/build.sh): Atlas at the commit and tree
    pinned in [`install/atlas-source.json`](install/atlas-source.json), for the
    `qwen3.8-flash-next` kernel target; 30–60 minutes cold). Its tag is the
-   git tree of [`install/`](install/), so the image always matches your
-   checkout. No image is published yet; once one is, `PULL=1` in `.env`
-   pulls `ghcr.io/enntity/atlas-sparkqwen:<tag>` instead. It then copies the
-   image to the other Spark.
+   git tree of [`install/`](install/) (the release tree `656234c336af`), so
+   the image always matches your checkout. No SparkQwen image is published
+   yet; once one is, `PULL=1` in `.env` pulls
+   `ghcr.io/enntity/atlas-sparkqwen:<tag>` instead. It then copies the image
+   to the other Spark.
 2. **Weights.** Downloads
    [`nvidia/Qwen3.8-Flash-Next-NVFP4`](https://huggingface.co/nvidia/Qwen3.8-Flash-Next-NVFP4)
    at the revision pinned in [`install/checkpoint.json`](install/checkpoint.json)
@@ -121,13 +128,17 @@ XML call format (Atlas's `qwen3_coder` parser); `bench/tool_probe.py` passes
 
 **Profiles** (`PROFILE` in `.env`):
 
-- `8x32k` (default): up to eight requests with up to 32K context each. All
-  requests share one BF16 KV pool that also holds the prefix cache: about
-  3.26M tokens at the default `GPU_MEMORY_UTILIZATION` of 0.88.
-- `4x262k`: up to four requests with up to 256K context each (3.35M-token pool).
-- `8x262k`: up to eight requests with up to 256K context each, from the same
-  shared pool (3.19M tokens). Requests that together need more than the pool
-  wait for room.
+- `8x32k` (default): up to eight requests of up to 32K context each, from one
+  shared BF16 KV pool: about 3.26M tokens at the default
+  `GPU_MEMORY_UTILIZATION` of 0.88.
+- `4x262k`: up to four requests of up to 256K context each, from the same
+  3.35M-token pool.
+- `8x262k`: up to eight requests of up to 256K context each, from the same
+  3.19M-token pool.
+
+Each profile sets a concurrency limit and a per-request context limit. All
+requests and the prefix cache draw on one shared pool; requests that together
+need more tokens than the pool holds wait for room.
 
 The greedy settings above are for measurement. For real work leave sampling
 unset (the defaults above) or use the model card's values; greedy decoding can
@@ -144,7 +155,7 @@ FP8_GDN=1    # FP8 Gated DeltaNet projections: lossy (not bit-exact)
 
 `FP8_GDN=1` made one-stream decode 1-12% faster, depending on the prompt, and
 scored 40/40 and 12/12 on our quality probe with the 2026-10-06 engine, but
-its outputs differ from the default, and it has not been measured with RC15.
+its outputs differ from the default, and it has not been measured with RC15 or RC16.
 Check it on your own workload before relying on it.
 
 `QSA_TC2R` is gone: the tensor-core QSA prefill it selected became the
@@ -166,7 +177,7 @@ Atlas here is [`Enntity/atlas`](https://github.com/Enntity/atlas) at the
 commit pinned in [`install/atlas-source.json`](install/atlas-source.json),
 built from four layers ([docs/ENGINE.md](docs/ENGINE.md)):
 
-1. Atlas-Inf `main`.
+1. Atlas-Inf `main` base at `4405bce3`.
 2. SparkGLM's upstream GLM-5.3-Flash series, which carries the
    model-independent serving and pair-communication work; its GLM-only paths
    stay off for this model.

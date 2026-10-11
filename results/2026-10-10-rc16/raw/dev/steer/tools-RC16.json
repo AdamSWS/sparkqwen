@@ -1,0 +1,490 @@
+{
+ "tag": "RC16",
+ "model": "qwen3.8-flash-next-atlas",
+ "summary": {
+  "single": "5/5",
+  "typed": "5/5",
+  "parallel": "5/5",
+  "followup": "5/5",
+  "no_tool": "5/5",
+  "choice_none": "5/5",
+  "stream": "5/5"
+ },
+ "rows": [
+  {
+   "case": "single",
+   "run": 0,
+   "greedy": true,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "get_weather",
+     {
+      "city": "Oslo",
+      "unit": "celsius"
+     }
+    ]
+   ]
+  },
+  {
+   "case": "single",
+   "run": 1,
+   "greedy": false,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "get_weather",
+     {
+      "city": "Oslo",
+      "unit": "celsius"
+     }
+    ]
+   ]
+  },
+  {
+   "case": "single",
+   "run": 2,
+   "greedy": false,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "get_weather",
+     {
+      "city": "Oslo",
+      "unit": "celsius"
+     }
+    ]
+   ]
+  },
+  {
+   "case": "single",
+   "run": 3,
+   "greedy": false,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "get_weather",
+     {
+      "city": "Oslo",
+      "unit": "celsius"
+     }
+    ]
+   ]
+  },
+  {
+   "case": "single",
+   "run": 4,
+   "greedy": false,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "get_weather",
+     {
+      "city": "Oslo",
+      "unit": "celsius"
+     }
+    ]
+   ]
+  },
+  {
+   "case": "typed",
+   "run": 0,
+   "greedy": true,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "add",
+     {
+      "a": 17,
+      "b": 25
+     }
+    ]
+   ]
+  },
+  {
+   "case": "typed",
+   "run": 1,
+   "greedy": false,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "add",
+     {
+      "a": 17,
+      "b": 25
+     }
+    ]
+   ]
+  },
+  {
+   "case": "typed",
+   "run": 2,
+   "greedy": false,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "add",
+     {
+      "a": 17,
+      "b": 25
+     }
+    ]
+   ]
+  },
+  {
+   "case": "typed",
+   "run": 3,
+   "greedy": false,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "add",
+     {
+      "a": 17,
+      "b": 25
+     }
+    ]
+   ]
+  },
+  {
+   "case": "typed",
+   "run": 4,
+   "greedy": false,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "add",
+     {
+      "a": 17,
+      "b": 25
+     }
+    ]
+   ]
+  },
+  {
+   "case": "parallel",
+   "run": 0,
+   "greedy": true,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "get_weather",
+     {
+      "city": "Oslo",
+      "unit": "celsius"
+     }
+    ],
+    [
+     "get_weather",
+     {
+      "city": "Lima",
+      "unit": "celsius"
+     }
+    ]
+   ]
+  },
+  {
+   "case": "parallel",
+   "run": 1,
+   "greedy": false,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "get_weather",
+     {
+      "city": "Oslo",
+      "unit": "celsius"
+     }
+    ],
+    [
+     "get_weather",
+     {
+      "city": "Lima",
+      "unit": "celsius"
+     }
+    ]
+   ]
+  },
+  {
+   "case": "parallel",
+   "run": 2,
+   "greedy": false,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "get_weather",
+     {
+      "city": "Oslo",
+      "unit": "celsius"
+     }
+    ],
+    [
+     "get_weather",
+     {
+      "city": "Lima",
+      "unit": "celsius"
+     }
+    ]
+   ]
+  },
+  {
+   "case": "parallel",
+   "run": 3,
+   "greedy": false,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "get_weather",
+     {
+      "city": "Oslo",
+      "unit": "celsius"
+     }
+    ],
+    [
+     "get_weather",
+     {
+      "city": "Lima",
+      "unit": "celsius"
+     }
+    ]
+   ]
+  },
+  {
+   "case": "parallel",
+   "run": 4,
+   "greedy": false,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "get_weather",
+     {
+      "city": "Oslo",
+      "unit": "celsius"
+     }
+    ],
+    [
+     "get_weather",
+     {
+      "city": "Lima",
+      "unit": "celsius"
+     }
+    ]
+   ]
+  },
+  {
+   "case": "followup",
+   "run": 0,
+   "greedy": true,
+   "ok": true,
+   "finish": "stop",
+   "detail": "It's currently **7\u00b0C** in Oslo with **light rain**. You might want an umbrella and a waterproof jacket if you're heading out!"
+  },
+  {
+   "case": "followup",
+   "run": 1,
+   "greedy": false,
+   "ok": true,
+   "finish": "stop",
+   "detail": "It's currently **7\u00b0C** in Oslo with **light rain**. You might want to bring an umbrella if you're heading out!"
+  },
+  {
+   "case": "followup",
+   "run": 2,
+   "greedy": false,
+   "ok": true,
+   "finish": "stop",
+   "detail": "It's currently **7\u00b0C** in Oslo with **light rain**. You might want an umbrella and a waterproof layer if you're heading out!"
+  },
+  {
+   "case": "followup",
+   "run": 3,
+   "greedy": false,
+   "ok": true,
+   "finish": "stop",
+   "detail": "It's currently **7\u00b0C** in Oslo with **light rain**. You might want an umbrella and a waterproof jacket if you're heading out!"
+  },
+  {
+   "case": "followup",
+   "run": 4,
+   "greedy": false,
+   "ok": true,
+   "finish": "stop",
+   "detail": "It's currently **7\u00b0C** in Oslo with **light rain**. You might want an umbrella and a waterproof layer if you're heading out!"
+  },
+  {
+   "case": "no_tool",
+   "run": 0,
+   "greedy": true,
+   "ok": true,
+   "finish": "stop",
+   "detail": "4"
+  },
+  {
+   "case": "no_tool",
+   "run": 1,
+   "greedy": false,
+   "ok": true,
+   "finish": "stop",
+   "detail": "4"
+  },
+  {
+   "case": "no_tool",
+   "run": 2,
+   "greedy": false,
+   "ok": true,
+   "finish": "stop",
+   "detail": "4"
+  },
+  {
+   "case": "no_tool",
+   "run": 3,
+   "greedy": false,
+   "ok": true,
+   "finish": "stop",
+   "detail": "4"
+  },
+  {
+   "case": "no_tool",
+   "run": 4,
+   "greedy": false,
+   "ok": true,
+   "finish": "stop",
+   "detail": "4"
+  },
+  {
+   "case": "choice_none",
+   "run": 0,
+   "greedy": true,
+   "ok": true,
+   "finish": "stop",
+   "detail": "eteorological service), **weather.com**, or a quick search for \"Oslo weather\" to get the current temperature in Celsius."
+  },
+  {
+   "case": "choice_none",
+   "run": 1,
+   "greedy": false,
+   "ok": true,
+   "finish": "stop",
+   "detail": "mate date/season, I can give you general climate info (average temperatures, rainfall, etc.), but not the live forecast."
+  },
+  {
+   "case": "choice_none",
+   "run": 2,
+   "greedy": false,
+   "ok": true,
+   "finish": "stop",
+   "detail": "r Oslo now\"\n- Your phone's built-in weather app\n\nThese will give you accurate, up-to-the-minute temperatures in Celsius."
+  },
+  {
+   "case": "choice_none",
+   "run": 3,
+   "greedy": false,
+   "ok": true,
+   "finish": "stop",
+   "detail": " \"weather Oslo\"\n\nIf you'd like, I can tell you about Oslo's typical climate or what to expect in a given season instead."
+  },
+  {
+   "case": "choice_none",
+   "run": 4,
+   "greedy": false,
+   "ok": true,
+   "finish": "stop",
+   "detail": "no (a popular Norwegian weather site), Yr, or a weather app on your phone for the most up-to-date conditions in Celsius."
+  },
+  {
+   "case": "stream",
+   "run": 0,
+   "greedy": true,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "get_weather",
+     {
+      "city": "Oslo",
+      "unit": "celsius"
+     }
+    ]
+   ]
+  },
+  {
+   "case": "stream",
+   "run": 1,
+   "greedy": false,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "get_weather",
+     {
+      "city": "Oslo",
+      "unit": "celsius"
+     }
+    ]
+   ]
+  },
+  {
+   "case": "stream",
+   "run": 2,
+   "greedy": false,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "get_weather",
+     {
+      "city": "Oslo",
+      "unit": "celsius"
+     }
+    ]
+   ]
+  },
+  {
+   "case": "stream",
+   "run": 3,
+   "greedy": false,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "get_weather",
+     {
+      "city": "Oslo",
+      "unit": "celsius"
+     }
+    ]
+   ]
+  },
+  {
+   "case": "stream",
+   "run": 4,
+   "greedy": false,
+   "ok": true,
+   "finish": "tool_calls",
+   "detail": [
+    [
+     "get_weather",
+     {
+      "city": "Oslo",
+      "unit": "celsius"
+     }
+    ]
+   ]
+  }
+ ]
+}

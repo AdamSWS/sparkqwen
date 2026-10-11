@@ -1,0 +1,81 @@
+bdb71b8 install: pin the RC16 engine (Enntity/atlas sparkqwen/atlas-20261010-rc16 1c43247d) and arm content-loop steering in every profile
+ghcr.io/enntity/atlas-sparkqwen:656234c336af
+## reference: 8x32k without prefix caching and speculation, one at a time
+== <home>/sparkqwen-rc16/receipts/exact/8x32k-ref-nocache-nospec.json up: 3860816 max KV tokens MemAvailable: 10887368 kB
+REF1 C1 plain ['8199ce', 'eb1ff8', 'd731b4', '13de3d', 'a5bed8', 'e112d3', '9f8c77', '1c6136'] cached [0, 0, 0, 0, 0, 0, 0, 0]
+REFP1 C1 prefix ['c64f80', '6a73de', 'df4462', '64fd24', '2423f4', '7b35e9', 'be281c', 'fccb7a'] cached [0, 0, 0, 0, 0, 0, 0, 0]
+## 8x32k (default)
+== 8x32k up: 3265104 max KV tokens MemAvailable: 16370980 kB
+REF1 vs D1: 8/8 identical
+REFP1 vs DP1: 8/8 identical
+REF1 vs D4: 8/8 identical
+REFP1 vs DP4: 8/8 identical
+REF1 vs D8: 8/8 identical
+REFP1 vs DP8: 8/8 identical
+alive after: ok
+PASS
+structured C1: median 101.98 tok/s, aggregate 101.98, TTFT 124.7 ms
+structured C8: median 49.52 tok/s, aggregate 389.08, TTFT 297.2 ms
+prose C1: median 72.67 tok/s, aggregate 72.67, TTFT 137.5 ms
+prose C8: median 33.53 tok/s, aggregate 260.33, TTFT 286.4 ms
+code C1: median 93.75 tok/s, aggregate 93.75, TTFT 158.1 ms
+code C8: median 38.74 tok/s, aggregate 296.85, TTFT 383.2 ms
+json C1: median 84.47 tok/s, aggregate 84.47, TTFT 144.2 ms
+json C8: median 42.1 tok/s, aggregate 333.01, TTFT 342.9 ms
+RC16 arith: 40/40
+RC16 needle: 12/12
+warm 8192 0 8162 32 2.087
+warm 8192 1 8191 8160 0.173
+warm 8192 2 8239 8176 0.187
+warm 8192 3 8286 8224 0.167
+warm 8192 4 8333 8272 0.163
+warm 8192 5 8380 8320 0.181
+warm 20480 0 20542 32 5.246
+warm 20480 1 20571 20528 0.214
+warm 20480 2 20622 20560 0.173
+warm 20480 3 20670 20608 0.193
+warm 20480 4 20718 20656 0.186
+warm 20480 5 20766 20704 0.184
+RC16: correct 20/20; turn-0 TTFT [5.99, 7.86, 9.75, 11.68]; turns 1+ TTFT median 0.49 max 0.8
+python3: can't open file '<home>/sparkqwen-rc16/bench/tool_probe.py': [Errno 2] No such file or directory
+│  ●  9/9 BASIC OUTPUT GATES PASSED                                                        │
+│  WORKLOAD       DECODE EST.      LAST OUTPUT          RANGE          BASIC GATE          │
+│  CODE              86.6 tok/s      21.4s last     83.3–86.6     ✓ 3/3                    │
+│  PROSE             51.8 tok/s      24.2s last     49.8–54.1     ✓ 3/3                    │
+│  STRUCTURED*       98.9 tok/s       6.3s last     96.7–101.3    ✓ 3/3                    │
+│  16K PREFILL   cold 4,043 tok/s  •  immediate replay 76,031 tok/s                        │
+│  SHORT CODE • END-TO-END • 256-TOKEN CAP PER AGENT                                       │
+│  AGGREGATE   C1 61.7  •  C2 98.6  •  C4 166.2  •  C8 260.1 tok/s                         │
+steer log lines (8x32k): 1
+## 4x262k
+== 4x262k up: 3355520 max KV tokens MemAvailable: 14823112 kB
+needle {'prompt': 77463, 'ttft': 21.1, 'n': 81, 'tps': 57.6, 'ans': '40639565'} ok True
+follow-up {'prompt': 77501, 'ttft': 0.3, 'n': 433, 'tps': 49.2, 'error': None}
+needle {'prompt': 77463, 'ttft': 0.2, 'n': 81, 'tps': 60.0, 'ans': '40639565'} ok True
+follow-up {'prompt': 77501, 'ttft': 0.2, 'n': 433, 'tps': 51.6, 'error': None}
+exhaust {'prompt': 100863, 'ttft': 91.3, 'n': 85, 'tps': 3.1, 'ans': '60723746'} ok True
+exhaust {'prompt': 100863, 'ttft': 41.1, 'n': 85, 'tps': 1.1, 'ans': '21998280'} ok True
+exhaust {'prompt': 100863, 'ttft': 66.2, 'n': 85, 'tps': 1.6, 'ans': '84858220'} ok True
+exhaust {'prompt': 100863, 'ttft': 116.4, 'n': 84, 'tps': 40.0, 'ans': '16923662'} ok True
+RC16L arith: 40/40
+RC16L needle: 12/12
+## 8x262k
+== 8x262k up: 3187216 max KV tokens MemAvailable: 14706460 kB
+needle {'prompt': 77463, 'ttft': 21.0, 'n': 81, 'tps': 57.4, 'ans': '40639565'} ok True
+follow-up {'prompt': 77501, 'ttft': 0.3, 'n': 433, 'tps': 49.1, 'error': None}
+exhaust {'prompt': 100863, 'ttft': 66.1, 'n': 85, 'tps': 1.6, 'ans': '60723746'} ok True
+exhaust {'prompt': 100863, 'ttft': 91.2, 'n': 85, 'tps': 3.1, 'ans': '21998280'} ok True
+exhaust {'prompt': 100863, 'ttft': 41.0, 'n': 85, 'tps': 1.1, 'ans': '84858220'} ok True
+exhaust {'prompt': 100863, 'ttft': 116.4, 'n': 84, 'tps': 39.8, 'ans': '16923662'} ok True
+RC16-8L: correct 20/20; turn-0 TTFT [5.99, 7.86, 9.74, 11.64]; turns 1+ TTFT median 0.47 max 0.71
+RC16-8L arith: 40/40
+RC16-8L needle: 12/12
+python3: can't open file '<home>/sparkqwen-rc16/bench/tool_probe.py': [Errno 2] No such file or directory
+structured C8: median 49.36 tok/s, aggregate 387.57, TTFT 284.1 ms
+prose C8: median 33.11 tok/s, aggregate 257.14, TTFT 286.7 ms
+code C8: median 38.39 tok/s, aggregate 294.15, TTFT 394.8 ms
+json C8: median 41.96 tok/s, aggregate 331.67, TTFT 339.5 ms
+free: Mem:             121           4         110           0           8         117
+RDONE
+RC16-8x32k single 5/5 typed 5/5 parallel 5/5 followup 5/5 no_tool 5/5 choice_none 5/5 stream 5/5
+RC16-8x262k single 5/5 typed 5/5 parallel 5/5 followup 5/5 no_tool 5/5 choice_none 5/5 stream 5/5

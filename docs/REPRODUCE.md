@@ -6,10 +6,10 @@ Run the drivers in [`bench/`](../bench/) on rank 0 against the running engine
 workload at a time, with nothing else using the pair, after one warmup pass.
 
 The README's numbers and their raw receipts are in
-[`results/2026-10-08-rc15/`](../results/2026-10-08-rc15/RESULT.md): `raw/recipe/`
-from the recipe's own image, `raw/dev/` from the release gates (with each
-arm's exact environment, `raw/dev/*.list`), and `raw/vllm/` from vLLM on the
-same pair. Everything below runs with the default profile and no opt-ins
+[`results/2026-10-10-rc16/`](../results/2026-10-10-rc16/RESULT.md): `raw/recipe/`
+from the recipe's own image (the round that produced them is
+`raw/dev/round_rc16.sh`) and `raw/dev/` from the release gate. vLLM on the same
+pair is in [`results/2026-10-08-rc15/raw/vllm/`](../results/2026-10-08-rc15/RESULT.md). Everything below runs with the default profile and no opt-ins
 unless it says otherwise.
 
 ## sparkDash decode
@@ -41,13 +41,21 @@ python3 sq_bench.py mine decode warm
 
 [RigMark](https://github.com/alexellis/rigmark) (MIT) runs three decode
 workloads with output gates, a cold 16K prefill and end-to-end concurrency.
-We ran it at commit 40fabca with this command; the metadata files are in
-`raw/recipe/` and `raw/vllm/rerun/`:
+We ran it at commit 40fabca with this command; the metadata files are
+`raw/recipe/metadata-sq.json` (RC16) and, for vLLM,
+`results/2026-10-08-rc15/raw/vllm/rerun/metadata-vllm.json`:
 
 ```sh
 ./rigmark run --base-url http://127.0.0.1:8893 --model auto --metadata metadata.json \
   --runs 3 --prefill-runs 2 --prefill-depths 16384 --concurrency 1,2,4,8 --concurrency-runs 1 \
   --extra-body '{"chat_template_kwargs":{"reasoning_effort":"low"}}' --output rigmark.json
+```
+
+## Tool calling
+
+```sh
+cd bench
+python3 tool_probe.py mine 5          # 7 cases, each greedy once and sampled four times
 ```
 
 ## Exactness

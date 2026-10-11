@@ -8,8 +8,9 @@ What to know before relying on SparkQwen.
 - No SparkQwen image is published; `./start.sh` builds one from the pinned
   engine (a cold build takes 30-60 minutes). The recipe ran end to end from a
   clean clone on our pair and reproduced the release gates
-  (`results/2026-10-08-rc15`, first paragraph), with the checkpoint
-  already in place; the download path itself was not exercised in that run.
+  (`results/2026-10-10-rc16`, first paragraph), with the checkpoint already
+  in place. The download step was checked separately: it fetched the pinned
+  checkpoint (124 GiB) byte-identical to ours.
 
 ## Scope of the measurements
 
@@ -68,12 +69,12 @@ What to know before relying on SparkQwen.
 ## Numerics
 
 - **Exact** here means: an option gives the same greedy tokens on and off.
-  With RC15's default profile, speculative decoding gives the same text as
+  With RC16's default profile, speculative decoding gives the same text as
   serial decode, concurrency gives the same text as one request at a time,
   and a prefix-cache hit gives the same text as computing the prompt: 8
   prompts with thinking on, at one, four and eight requests, plain and behind
   a cached ~4.4K-token prefix, were 8/8 identical to one-at-a-time decode with
-  speculation and the cache off (`results/2026-10-08-rc15`, Exactness). The
+  speculation and the cache off (`results/2026-10-10-rc16`, Exactness). The
   prefill kernels are built to be row- and chunk-invariant so that cached
   state matches recomputed state; the receipts check the resulting tokens,
   not the cached bytes. Eight short prompts are a sample, not a proof.
@@ -92,21 +93,29 @@ What to know before relying on SparkQwen.
 
 - The profiles default `reasoning_effort` to `low`. Requests can override it
   through `chat_template_kwargs`.
-- **Greedy decoding can loop.** The model card recommends sampling
-  (temperature 1.0, top-p 0.95, top-k 20 with thinking; 0.7, 0.80, 20 without),
-  and requests that leave sampling unset get those. At temperature 0, as
-  benchmarks run it, the model can fall into a repetition attractor: in
-  RigMark's code workload, one of three greedy runs starts repeating
-  `0, 0, 0` in a Go test table and is cut off (finish reason `length`), so
-  that gate scores 2/3.
-  vLLM on the same pair, with different rounding, passed it 3/3. Use the
-  model's sampling settings for real work.
+- **Greedy decoding can loop, and the profiles steer off loops.** The model
+  card recommends sampling (temperature 1.0, top-p 0.95, top-k 20 with
+  thinking; 0.7, 0.80, 20 without), and requests that leave sampling unset get
+  those. At temperature 0, as benchmarks run it, the model can fall into a
+  repetition attractor (RC15 lost one of RigMark's code gates to a Go test
+  table of `0, 0, 0, ...`). With content-loop steering (`ATLAS_LOOP_STEER`,
+  on in every profile), once the output's tail repeats a 2-64 token pattern
+  32 times, the next pick may not take the token that continues it; the run
+  of repeats stays in the output and the model continues from there (the
+  RigMark run now writes its 32 zeros and finishes the table). After three
+  steers in one request, a further loop ends the response as before
+  (finish reason `length`). Legitimately repetitive output longer than the
+  threshold (a 40-element zero array) is steered too. A request's
+  `repetition_detection` object sets the threshold; a profile without
+  `ATLAS_LOOP_STEER` restores RC15's behavior.
 - The card's presence penalty of 1.5 for thinking-off requests is applied only
   to requests that carry tools: on a long single-file coding answer it
   suppressed every token already written. A request can still set it.
-- Tool calling is configured in the engine for this model (the checkpoint's
-  `<tool_call><function=…><parameter=…>` format, Atlas's `qwen3_coder`
-  parser) but has not been tested end to end on the pair.
+- Tool calling uses the checkpoint's `<tool_call><function=…><parameter=…>`
+  format (Atlas's `qwen3_coder` parser). `bench/tool_probe.py` passes 35/35
+  on the pair (single, typed, parallel, follow-up, no-tool, `tool_choice:
+  none`, streamed); real agent clients with large tool sets have not been
+  measured yet.
 - Structured output, images and video have not been tested with this model.
 - In sparkDash's structured prompts, a "(stream i/n)" suffix makes the model
   emit only part of the requested count. Without `ignore_eos`, `min_tokens`
@@ -130,10 +139,10 @@ What to know before relying on SparkQwen.
   pool too large. Let the host settle for a minute or two first.
 - The image is built for arm64 and SM121 (GB10) only.
 
-## Known issues in RC15
+## Known issues
 
-Found in the release review and deferred to the next release; none affects
-the shipped profiles' measured behavior.
+Found in release reviews and deferred; none affects the shipped profiles'
+measured behavior.
 
 - `ATLAS_QWEN4EXP_ROWS32_TILE` has no fallback if its kernel fails to
   launch (the NVFP4 row kernels do).
@@ -143,3 +152,5 @@ the shipped profiles' measured behavior.
 - The startup parity check between ranks does not yet cover
   `ATLAS_QWEN4EXP_SNAPSHOT_AUX_MB`, and preflight does not use the resolved
   SSM cache slot count.
+- A steer committed on the plain (non-speculative) decode path is counted but
+  not logged; only steers on the speculative path write a log line.

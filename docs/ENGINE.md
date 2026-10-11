@@ -7,10 +7,11 @@ pinned in [`install/atlas-source.json`](../install/atlas-source.json), for the
 kernel target `qwen3.8-flash-next` (model type `qwen4_exp`).
 [`install/build.sh`](../install/build.sh) refuses any other tree.
 
-The pin is `sparkqwen/atlas-20261008-rc15` at de4386b4 (release candidate 15),
+The pin is `sparkqwen/atlas-20261010-rc16` at 1c43247d (release candidate 16),
 which adds SparkQwen-only work on top of the 2026-10-06 Qwen series
 (3322e221). It passed the gates in
-[results/2026-10-08-rc15](../results/2026-10-08-rc15/RESULT.md).
+[results/2026-10-10-rc16](../results/2026-10-10-rc16/RESULT.md) (RC15:
+[results/2026-10-08-rc15](../results/2026-10-08-rc15/RESULT.md)).
 
 ## Layers
 
@@ -73,7 +74,7 @@ where noted:
 Measurements of these, with receipts:
 [results/2026-10-05-bringup](../results/2026-10-05-bringup/RESULT.md).
 
-## SparkQwen-only commits (RC15)
+## SparkQwen-only commits (RC15, RC16)
 
 Each is behind a default-off `ATLAS_*` switch that the shipped profiles turn
 on ([`install/profiles/`](../install/profiles/) lists them all). Exact means
@@ -96,11 +97,14 @@ checks below, which they keep.
 | Deferred and fused Gated DeltaNet and QSA commits after verify | `ATLAS_QWEN4EXP_EXACT_DEFER`, `_GDN_COMMIT_FUSE`, `_QSA_COMMIT_TABLE` |
 | MTP bootstrap no longer serialized behind the context-commit levers | `ATLAS_MTP_DFLASH_CTX_SCOPED` |
 | `min_tokens` end-token ban at the target pick and in drafts | `ATLAS_QWEN4EXP_EOS_BAN` |
+| **RC16:** content-loop steering: after a tail the content-loop watchdog would end, the next pick skips the cycle's continuation token (up to 3 times a request), the same rule at every pick so speculation still commits serial decode's tokens; changes output only where a loop forms | `ATLAS_LOOP_STEER`, `ATLAS_LOOP_STEER_MAX` |
+| **RC16:** a Poolside-format stream holds a call's header until the call validates (GLM; not this model's parser) | always |
 
 The profiles also arm Atlas's own content-loop watchdog with a threshold of
 32 (`ATLAS_CONTENT_LOOP_WATCHDOG`, `ATLAS_CONTENT_LOOP_MIN_REPEATS`): it ends a
-response whose tail repeats a 2-64 token pattern 32 times back to back. A
-request's `repetition_detection` object overrides it.
+response whose tail repeats a 2-64 token pattern 32 times back to back, once
+steering has been spent. A request's `repetition_detection` object overrides
+the threshold.
 
 ## Changing the engine
 

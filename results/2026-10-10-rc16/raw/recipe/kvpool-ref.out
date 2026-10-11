@@ -1,0 +1,7 @@
+2026-10-10T23:27:35.666468Z  INFO spark::main_modules::serve_phases::kv_cache: Prefill config: ssm_prefill_chunk=16384, args.max_prefill_tokens=16384, prefill_budget=16384, max_batch_tokens=16392
+2026-10-10T23:28:10.394675Z  INFO spark_model::model::ssm_pool: SSM state pool: 8 slots × 36 layers = 454 MB
+2026-10-10T23:28:10.560045Z  INFO spark_model::model::ssm_snapshot: SSM snapshot pool: Marconi 16 slots (909 MB), decode-rollback 8 slots × 8 seqs (3636 MB), 36 layers
+2026-10-10T23:28:10.563988Z  INFO spark_model::factory::build: KV cache: 121.7 GB total × 88% util = 107.1 GB budget; 58.9 GB pre-KV + 1.2 GB reserve → 46.9 GB for KV (incl. 2.8 GB for 768 B/token of per-sequence indexer state) → 241301 blocks × 16 tok/block = 3860816 max KV tokens
+2026-10-10T23:28:10.564548Z  INFO spark_model::factory::build::glm: KV cache: rank 0 fits 241301 blocks; all ranks agree on 240035
+2026-10-10T23:28:12.101544Z  INFO spark_runtime::kv_cache::paged_impl: KV cache: 240035 blocks × 12 layers = 44.0 GB total
+2026-10-10T23:28:13.389603Z  INFO spark::scheduler::loop_steer: content-loop steering armed (ATLAS_LOOP_STEER=1) max=3

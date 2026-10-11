@@ -1,0 +1,24 @@
+## 1. steering OFF
+== SOFF up after 44 s; MemAvailable 15 / 17 GiB
+off4 C4 plain ['8199ce', 'eb1ff8', 'd731b4', '13de3d', 'a5bed8', 'e112d3', '9f8c77', '1c6136'] cached [32, 32, 32, 32, 32, 32, 32, 32]
+REF1 vs off4: 8/8 identical
+## 2. steering ON: exactness
+== SON up after 44 s; MemAvailable 15 / 18 GiB
+[2m2026-10-10T23:10:43.149564Z[0m [32m INFO[0m [2mspark::scheduler::loop_steer[0m[2m:[0m content-loop steering armed (ATLAS_LOOP_STEER=1) [3mmax[0m[2m=[0m3
+on4 C4 plain ['8199ce', 'eb1ff8', 'd731b4', '13de3d', 'a5bed8', 'e112d3', '9f8c77', '1c6136'] cached [32, 32, 32, 32, 32, 32, 32, 32]
+onp8 C8 prefix ['c64f80', '6a73de', 'df4462', '64fd24', '2423f4', '7b35e9', 'be281c', 'fccb7a'] cached [4448, 4448, 4448, 4448, 4448, 4448, 4448, 4448]
+REF1 vs on4: 8/8 identical
+REFP1 vs onp8: 8/8 identical
+## 3. RigMark decode, RC15 prompts
+│  ●  9/9 BASIC OUTPUT GATES PASSED                                                        │
+│  WORKLOAD       DECODE EST.      LAST OUTPUT          RANGE          BASIC GATE          │
+│  CODE              86.4 tok/s      21.5s last     82.8–86.4     ✓ 3/3                    │
+│  PROSE             51.7 tok/s      24.3s last     49.7–54.2     ✓ 3/3                    │
+│  STRUCTURED*       98.9 tok/s       6.3s last     96.3–100.9    ✓ 3/3                    │
+0
+## 4. sparkDash C8
+code C8: median 38.21 tok/s, aggregate 292.83, TTFT 396.4 ms
+structured C8: median 49.41 tok/s, aggregate 388.26, TTFT 274.5 ms
+## 5. tool calling (OpenAI tools, 7 cases x 5 runs: greedy + 4 sampled)
+RC16 single 5/5 typed 5/5 parallel 5/5 followup 5/5 no_tool 5/5 choice_none 5/5 stream 5/5
+SDONE

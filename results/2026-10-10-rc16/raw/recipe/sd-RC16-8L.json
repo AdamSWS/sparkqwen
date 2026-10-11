@@ -1,0 +1,76 @@
+{
+ "tag": "RC16-8L",
+ "date": "2026-10-10T23:59:47.889Z",
+ "protocol": "sparkDash decode bench (MiaAI-Lab, MIT)",
+ "max": 400,
+ "waves": [
+  {
+   "type": "structured",
+   "c": 8,
+   "medianTps": 49.36,
+   "aggregateTps": 387.57,
+   "medianTtftMs": 284.1,
+   "perStream": [
+    49.96,
+    49.36,
+    49.36,
+    49.96,
+    48.45,
+    48.82,
+    49.36,
+    49.36
+   ]
+  },
+  {
+   "type": "prose",
+   "c": 8,
+   "medianTps": 33.11,
+   "aggregateTps": 257.14,
+   "medianTtftMs": 286.7,
+   "perStream": [
+    32.88,
+    32.14,
+    33.34,
+    33.87,
+    33.34,
+    34.17,
+    32.27,
+    32.88
+   ]
+  },
+  {
+   "type": "code",
+   "c": 8,
+   "medianTps": 38.39,
+   "aggregateTps": 294.15,
+   "medianTtftMs": 394.8,
+   "perStream": [
+    39.78,
+    39.36,
+    39.36,
+    38.1,
+    38.39,
+    36.77,
+    38.39,
+    38.39
+   ]
+  },
+  {
+   "type": "json",
+   "c": 8,
+   "medianTps": 41.96,
+   "aggregateTps": 331.67,
+   "medianTtftMs": 339.5,
+   "perStream": [
+    42.14,
+    43.57,
+    44.03,
+    43.57,
+    41.77,
+    41.46,
+    41.46,
+    41.77
+   ]
+  }
+ ]
+}

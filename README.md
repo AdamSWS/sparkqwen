@@ -20,9 +20,9 @@ cp .env.example .env      # set WORKER to the other Spark's ssh destination
 ./start.sh
 ```
 
-**Status: release candidate 15.** The engine is pinned
+**Status: release candidate 16.** The engine is pinned
 ([`install/atlas-source.json`](install/atlas-source.json): Enntity/atlas
-`sparkqwen/atlas-20261008-rc15` at de4386b4). `./start.sh` from a clean
+`sparkqwen/atlas-20261010-rc16` at 1c43247d). `./start.sh` from a clean
 clone built the image, served the pair and reproduced the numbers below on
 our Sparks; no image is published yet, so the first start builds one
 ([docs/LIMITATIONS.md](docs/LIMITATIONS.md)).
@@ -32,26 +32,29 @@ our Sparks; no image is published yet, so the first start builds one
 Measured on two DGX Sparks joined by one 200G cable, through the recipe's own
 image with the default profile, and against vLLM v0.30 run on the same pair
 with MiaAI-Lab's dual-Spark settings. Receipts and caveats:
+[2026-10-10-rc16](results/2026-10-10-rc16/RESULT.md); the vLLM runs are in
 [2026-10-08-rc15](results/2026-10-08-rc15/RESULT.md) (earlier:
 [2026-10-06-pinned](results/2026-10-06-pinned/RESULT.md),
 [bring-up](results/2026-10-05-bringup/RESULT.md)).
 
 | Workload | SparkQwen (Atlas, two Sparks) | vLLM v0.30, same pair |
 |---|---|---|
-| sparkDash decode, one stream: structured / prose / code / JSON (thinking off, 400 tokens) | **101.9 / 72.7 / 94.2 / 84.9 tok/s** | 77.3-77.7 / 61.0-62.1 / 71.3-72.2 / 65.8-66.4 |
-| sparkDash aggregate, 8 streams | **389.6 / 261.1** / 297.1 / 333.1 tok/s | 361.7-376.3 / 237.9-241.2 / 290.8-307.0 / 331.1-338.6 |
-| RigMark decode estimate: code / prose / structured | **84.6 / 51.7 / 98.8 tok/s** | 68.0 / 44.4 / 76.0 |
-| RigMark cold 16K-token prefill | **4,049 tok/s** | 3,516 tok/s |
-| RigMark end-to-end concurrency, C1 / C2 / C4 / C8 | 61.6 / 97.5 / 165.6 / 261.1 tok/s | 57.1 / 99.0 / 163.9 / 255.0 |
-| RigMark output gates | 8/9 (one greedy code run loops) | **9/9** |
-| Cold prompt 2K / 8K / 16K / 28K: time to first token | 0.73 / 2.10 / 4.17 / 7.48 s | 16K: 4.60 s |
-| 77K-token needle: time to first token, decode | **21.1 s, 58.4 tok/s** (`4x262k`); 21.5 s, 50.6 tok/s (`8x262k`) | 22.3 s, 50.6 tok/s (8 x 262K) |
-| Agent follow-up turns, 4 concurrent conversations: median time to first token | 0.47 s | **0.33 s** |
+| sparkDash decode, one stream: structured / prose / code / JSON (thinking off, 400 tokens) | **102.0 / 72.7 / 93.8 / 84.5 tok/s** | 77.3-77.7 / 61.0-62.1 / 71.3-72.2 / 65.8-66.4 |
+| sparkDash aggregate, 8 streams | **389.1 / 260.3** / 296.9 / 333.0 tok/s | 361.7-376.3 / 237.9-241.2 / 290.8-307.0 / 331.1-338.6 |
+| RigMark decode estimate: code / prose / structured | **86.6 / 51.8 / 98.9 tok/s** | 68.0 / 44.4 / 76.0 |
+| RigMark cold 16K-token prefill | **4,043 tok/s** | 3,516 tok/s |
+| RigMark end-to-end concurrency, C1 / C2 / C4 / C8 | 61.7 / 98.6 / 166.2 / 260.1 tok/s | 57.1 / 99.0 / 163.9 / 255.0 |
+| RigMark output gates | 9/9 | 9/9 |
+| Cold prompt 2K / 8K / 16K / 28K: time to first token | 0.73 / 2.08 / 4.11 / 7.32 s | 16K: 4.60 s |
+| 77K-token needle: time to first token, decode | **21.1 s, 57.6 tok/s** (`4x262k`); **21.0 s, 57.4 tok/s** (`8x262k`) | 22.3 s, 50.6 tok/s (8 x 262K) |
+| Agent follow-up turns, 4 concurrent conversations: median time to first token | 0.46-0.48 s | **0.33 s** |
 | KV pool, each at its recipe's memory setting | **3.2-3.4M tokens** (util 0.88) | 1.5M tokens (util 0.80) |
 | Quality probe: arithmetic / two-hop 24K needle | 40/40 · 12/12 | |
+| Tool calling (`bench/tool_probe.py`, 7 cases, greedy and sampled) | 35/35 | |
 
 vLLM ranges are two runs on different days (2026-10-06 and 2026-10-08);
-SparkQwen's eight-stream code and JSON fall inside them. Bold marks a clear
+SparkQwen's eight-stream code and JSON fall inside them. SparkQwen's 8x262k
+needle decode is with RC16; RC15 measured 50.6 tok/s on that profile. Bold marks a clear
 lead. Every option in the default profile is exact: greedy output with
 speculative decoding, with up to eight concurrent requests and with
 prefix-cache hits of ~4.4K tokens is identical to one-at-a-time decode with
@@ -112,9 +115,9 @@ per request in `chat_template_kwargs`. Requests that leave sampling unset get
 the model card's settings for their mode: temperature 1.0, top-p 0.95,
 top-k 20 with thinking on; 0.7, 0.80, 20 with thinking off; and the tools row
 (0.7, 0.80, 20, presence penalty 1.5) when the request carries tools. Tool
-calls (OpenAI `tools`) are parsed in the checkpoint's own XML call format
-(Atlas's `qwen3_coder` parser) but have not been tested end to end yet;
-structured output and images have not been tested.
+calls (OpenAI `tools`, streaming included) are parsed in the checkpoint's own
+XML call format (Atlas's `qwen3_coder` parser); `bench/tool_probe.py` passes
+35/35. Structured output and images have not been tested.
 
 **Profiles** (`PROFILE` in `.env`):
 

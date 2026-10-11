@@ -5,8 +5,9 @@ What to know before relying on SparkQwen.
 
 ## Installation
 
-- No SparkQwen image is published; `./start.sh` builds one from the pinned
-  engine (a cold build takes 30-60 minutes). The recipe ran end to end from a
+- The published image (`ghcr.io/enntity/atlas-sparkqwen:656234c336af`) is
+  arm64 for GB10 only; `PULL=0` builds the same tree from source (30-60
+  minutes cold). The recipe ran end to end from a
   clean clone on our pair and reproduced the release gates
   (`results/2026-10-10-rc16`, first paragraph), with the checkpoint already
   in place. The download step was checked separately: it fetched the pinned

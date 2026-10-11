@@ -29,8 +29,9 @@ IMAGE=$(install/build.sh)
 `Enntity/atlas` at the pinned commit, refuses any other tree, and builds the
 engine for `qwen3.8-flash-next` and its build-time tests.
 
-No SparkQwen image is published yet. Once one is, `docker pull "$IMAGE"`
-replaces the build. To use the image on the other Spark, copy it:
+The release image is published: `docker pull "$IMAGE"` replaces the build
+when your `install/` tree is the release's. To use a local build on the other
+Spark, copy it:
 `docker save "$IMAGE" | ssh other-spark docker load`.
 
 A cold build downloads the CUDA base images and compiles every kernel; allow

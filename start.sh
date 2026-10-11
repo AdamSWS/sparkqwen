@@ -29,18 +29,19 @@ on_worker() { ssh -o BatchMode=yes "$WORKER" "$(printf '%q ' "$@")"; }
 script_on_worker() { local script=$1; shift; on_worker bash -s -- "$@" < "$script"; }
 has_image() { docker image inspect "$IMAGE" >/dev/null 2>&1; }
 
-# No SparkQwen image is published yet, so the default is a local build.
-# PULL=1 tries the registry first.
+# The image for this checkout is pulled from ghcr.io/enntity/atlas-sparkqwen
+# (its tag is the install/ tree); if that tag is not published, it is built
+# from source. PULL=0 always builds.
 build() {
   say "image $IMAGE"
   if ! has_image; then
-    if [[ ${PULL:-0} != 1 ]] || ! docker pull "$IMAGE"; then
+    if [[ ${PULL:-1} != 1 ]] || ! docker pull "$IMAGE"; then
       say "building $IMAGE from source (a cold build takes 30-60 minutes)"
       IMAGE=$(install/build.sh)
     fi
   fi
   if ! on_worker docker image inspect "$IMAGE" >/dev/null 2>&1; then
-    if [[ ${PULL:-0} != 1 ]] || ! on_worker docker pull "$IMAGE"; then
+    if [[ ${PULL:-1} != 1 ]] || ! on_worker docker pull "$IMAGE"; then
       say "copying the image to $WORKER"; docker save "$IMAGE" | on_worker docker load
     fi
   fi

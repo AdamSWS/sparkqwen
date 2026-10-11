@@ -24,8 +24,8 @@ cp .env.example .env      # set WORKER to the other Spark's ssh destination
 ([`install/atlas-source.json`](install/atlas-source.json): Enntity/atlas
 `sparkqwen/atlas-20261010-rc16` at 1c43247d). `./start.sh` from a clean
 clone built the image, served the pair and reproduced the numbers below on
-our Sparks; no image is published yet, so the first start builds one
-([docs/LIMITATIONS.md](docs/LIMITATIONS.md)).
+our Sparks. The image is published, so `./start.sh` pulls it
+(`ghcr.io/enntity/atlas-sparkqwen:656234c336af`) rather than compiling.
 
 This README describes RC16: install tree `656234c336af` and the Atlas engine
 pinned in [`install/atlas-source.json`](install/atlas-source.json),
@@ -86,15 +86,14 @@ are single-session measurements on our pair, not a guarantee for yours.
 Run it on the Spark that will serve the API (rank 0). Each step is skipped when
 already done, so rerunning it just restarts the engine.
 
-1. **Image.** Builds the image from source
-   ([`install/build.sh`](install/build.sh): Atlas at the commit and tree
-   pinned in [`install/atlas-source.json`](install/atlas-source.json), for the
-   `qwen3.8-flash-next` kernel target; 30–60 minutes cold). Its tag is the
-   git tree of [`install/`](install/) (the release tree `656234c336af`), so
-   the image always matches your checkout. No SparkQwen image is published
-   yet; once one is, `PULL=1` in `.env` pulls
-   `ghcr.io/enntity/atlas-sparkqwen:<tag>` instead. It then copies the image
-   to the other Spark.
+1. **Image.** Pulls `ghcr.io/enntity/atlas-sparkqwen:<tag>`, where the tag is
+   the git tree of [`install/`](install/) (the release tree `656234c336af`),
+   so the image always matches your checkout. If that tag is not published
+   (an edited `install/`, or `PULL=0` in `.env`), it builds the image from
+   source instead ([`install/build.sh`](install/build.sh): Atlas at the commit
+   and tree pinned in [`install/atlas-source.json`](install/atlas-source.json),
+   for the `qwen3.8-flash-next` kernel target; 30–60 minutes cold). It then
+   pulls or copies the image to the other Spark.
 2. **Weights.** Downloads
    [`nvidia/Qwen3.8-Flash-Next-NVFP4`](https://huggingface.co/nvidia/Qwen3.8-Flash-Next-NVFP4)
    at the revision pinned in [`install/checkpoint.json`](install/checkpoint.json)

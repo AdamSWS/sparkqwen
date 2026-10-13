@@ -26,7 +26,7 @@ class LaunchContract(unittest.TestCase):
     def setUp(self):
         self.profile = json.loads(serve.profile_path({}, HERE).read_text())
         self.environment = {'NODE_RANK': '0', 'MASTER_ADDR': '192.0.2.1',
-                            'FABRIC_INTERFACE': 'enp1s0f0np0', 'MODEL_PATH': '/models/ckpt'}
+                            'FABRIC_INTERFACE': 'enp1s0f0np0', 'FABRIC_HCA': 'rocep1s0f0', 'MODEL_PATH': '/models/ckpt'}
 
     def test_two_rank_contract_and_private_ports(self):
         for rank in ('0', '1'):
@@ -165,6 +165,16 @@ class LaunchContract(unittest.TestCase):
             with self.subTest(util=bad), self.assertRaises(ValueError):
                 serve.launch(dict(self.environment, SPARKQWEN_GPU_MEMORY_UTILIZATION=bad), self.profile)
 
+    def test_missing_hca_fails_and_explicit_rails_are_exact(self):
+        missing = dict(self.environment)
+        missing.pop('FABRIC_HCA', None)
+        with self.assertRaises(ValueError):
+            serve.launch(missing, self.profile)
+        env = dict(self.environment, FABRIC_HCA='rocep1s0f1,roceP2p1s0f1')
+        _, result = serve.launch(env, self.profile)
+        self.assertEqual(result['ATLAS_RDMA_RAILS'], env['FABRIC_HCA'])
+        self.assertEqual(result['NCCL_IB_HCA'], env['FABRIC_HCA'])
+
     def test_fabric_hca_lists_and_same_port_siblings(self):
         # GB10 attaches its ConnectX-7 through two PCIe domains, so one cable
         # appears as two RDMA devices (domain 0000 and 0002, same bus:dev.fn).
@@ -187,7 +197,7 @@ class LaunchContract(unittest.TestCase):
         _, env = serve.launch(dict(self.environment, FABRIC_HCA='a0,b1'), self.profile)
         self.assertEqual(env['NCCL_IB_HCA'], 'a0,b1')
         self.assertEqual(env['ATLAS_RDMA_RAILS'], 'a0,b1')
-        for bad in ('', 'a0,', 'a0,b1\nX=1', 'a0;b1'):
+        for bad in ('', 'a0,', 'a0,b1\nX=1', 'a0;b1', 'a0:1', 'a0,a0'):
             with self.subTest(hca=bad), self.assertRaises(ValueError):
                 serve.launch(dict(self.environment, FABRIC_HCA=bad), self.profile)
 
@@ -208,6 +218,10 @@ class StartNode(unittest.TestCase):
         self.checkpoint.mkdir(parents=True)
         for name in ('config.json', 'model.safetensors.index.json'):
             (self.checkpoint/name).touch()
+        self.sysfs = self.root/'sysfs'
+        (self.sysfs/'rocep1s0f0/device/net/enp1s0f0np0').mkdir(parents=True)
+        (self.sysfs/'rocep1s0f0/ports/1').mkdir(parents=True)
+        (self.sysfs/'rocep1s0f0/ports/1/state').write_text('4: ACTIVE')
         self.bin = self.root/'bin'
         self.bin.mkdir()
         (self.bin/'docker').write_text(f'#!/bin/sh\necho "$*" >> {self.root}/docker.log\n')
@@ -220,7 +234,7 @@ class StartNode(unittest.TestCase):
             ['bash', str(HERE/'start-node.sh'), '--rank', rank, '--leader-address', '192.0.2.1',
              '--model-root', str(self.root/'models'), '--image', 'img', '--fabric-interface', 'enp1s0f0np0',
              '--cuda-cache', str(self.root/'cuda'), *extra],
-            capture_output=True, text=True, env=dict(os.environ, PATH=f'{self.bin}:{os.environ["PATH"]}'))
+            capture_output=True, text=True, env=dict(os.environ, PATH=f'{self.bin}:{os.environ["PATH"]}', FABRIC_SYSFS=str(self.sysfs)))
         lines = log.read_text().splitlines() if log.exists() else []
         return run, [line for line in lines if line.startswith('run ')]
 

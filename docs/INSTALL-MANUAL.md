@@ -54,10 +54,11 @@ published; nothing is converted.
 
 Start rank **1** (the worker) first, then rank **0** (the leader). The
 `--leader-address` is rank 0's IPv4 address on the direct cable. Each rank
-finds its own fabric interface from the RoCE device (`--fabric-hca`, default
-`rocep1s0f0`, the first port). If the cable is on the second port, pass
-`--fabric-hca rocep1s0f1` on that Spark (`./start.sh` detects this itself).
-Pass `--fabric-interface` to override the interface.
+uses the explicitly selected local RDMA device (`--fabric-hca`) or derives it
+from an unambiguous `--fabric-interface`. No physical port number is assumed.
+A comma-separated `--fabric-hca` list uses its first device for the socket
+interface and passes the full list to the engine. The list is exact: other
+PCIe-domain devices are not added automatically.
 
 ```sh
 # on rank 1:
@@ -99,3 +100,27 @@ overrides the profiles' 0.88, the only value we have measured.
 - **A rank exits during loading:** `docker logs atlas-sparkqwen-rank0`, or
   `./start.sh logs worker`. The launcher refuses to start without
   `config.json` and `model.safetensors.index.json` in the checkpoint.
+
+## Per-node fabric selection
+
+`./start.sh fabric` runs a read-only preflight on both hosts. It reports their
+selected HCA lists, network interfaces and IPv4 addresses. `./start.sh` performs
+the same check before preparation or stopping existing containers. A missing,
+down or mismatched override fails. Zero matching pairs, multiple matches
+(including multiple addresses on one interface), or ambiguous extra rails also
+fail with an error. Active backchannels are not presumed to reach the peer.
+
+Set `LEADER_FABRIC_HCA`, `WORKER_FABRIC_HCA`, `LEADER_FABRIC_INTERFACE` and
+`WORKER_FABRIC_INTERFACE` independently in `.env`. A side without its own setting
+inherits the corresponding legacy `FABRIC_HCA` or `FABRIC_INTERFACE` value.
+If an HCA list is supplied, its first device selects the socket interface;
+list every desired rail in matching peer order on both nodes. For example,
+one host can use `rocep1s0f1,roceP2p1s0f1` and the other
+`rocep1s0f0,roceP2p1s0f0`. Each listed pair must have a unique matching IPv4 subnet.
+The same physical port number or HCA name on both machines is not required.
+`LEADER_ADDRESS`, if supplied, must match the selected leader interface.
+
+The launch scripts pass exact lists with `FABRIC_SIBLINGS=0`. In particular,
+select both intended rails explicitly on dual-domain systems; automatic sibling
+expansion could select a backchannel on other board layouts. Direct container
+launches must supply `FABRIC_HCA`; a missing value fails instead of using port 0.
